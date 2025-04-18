@@ -68,5 +68,7 @@
             целые и неотрицательные числа. Пример: 250, 100, 0, 15.
         </TextBlock>
         <Button x:Name="ClearAll" Content="Очистить все" Grid.Column="0" Grid.Row="1" Width="120" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,55,60" Click="ClearAll_Click"/>
+                <Button Content="Загрузить из файла" Grid.Row="1" Height="20" Width="120" Margin="0,0,55,5" Click="LoadFromFile_Click"/>
+        <Button Content="Решить и загрузить в файл" Grid.Row="1" Height="20" Width="150" Margin="0,0,25,-50" Click="GetAnswerAndWriteFile"/>
     </Grid>
 </Window>

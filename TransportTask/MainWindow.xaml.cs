@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.IO;
 
 namespace TransportTask
 {
@@ -115,7 +106,7 @@ namespace TransportTask
             CreateTable(Rows.SelectedIndex+1,Columns.SelectedIndex+1);
         }
 
-        public void GetOporP(int p)
+        public void GetOporP(int p, bool isWritingFile)
         {
             int rows = Rows.SelectedIndex + 1;
             int cols = Columns.SelectedIndex + 1;
@@ -230,6 +221,23 @@ namespace TransportTask
                 }
 
                 int totalCost = CalculateTotalCost(result, matrix);
+
+                if (isWritingFile)
+                {
+                    var sb = new StringBuilder();
+                    sb.AppendLine("Опорный план:");
+                    for (int i = 0; i < rows; i++)
+                    {
+                        for (int j = 0; j < cols; j++)
+                        {
+                            sb.Append(result[i, j].ToString().PadRight(5));
+                        }
+                        sb.AppendLine();
+                    }
+                    sb.AppendLine($"Стоимость: {totalCost} у.е.");
+                    File.WriteAllText("transport_solution.txt", sb.ToString());
+                    MessageBox.Show("Ответ записан в файл transport_solution.txt");
+                }
 
                 PopulateGridWithResults(rows, cols, trueSupply, trueDemand, result, totalCost);
             }
@@ -389,8 +397,7 @@ namespace TransportTask
         private void OporP_Click(object sender, RoutedEventArgs e)
         {
             int Met = Method.SelectedIndex;
-            if (Met == 0) { GetOporP(0); };
-            if (Met == 1) { GetOporP(1); };
+            GetOporP(Met, false);
         }
 
         private void ClearAll_Click(object sender, RoutedEventArgs e)
@@ -404,6 +411,136 @@ namespace TransportTask
             OpornPlan.Children.Clear();
 
             CreateTable(Rows.SelectedIndex + 1, Columns.SelectedIndex + 1);
+        }
+
+        private void LoadFromFile_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog dialog = new Microsoft.Win32.OpenFileDialog();
+            dialog.Filter = "Text documents (*.txt)|*.txt|All files (*.*)|*.*";
+            dialog.FilterIndex = 2;
+
+            Nullable<bool> result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                // Open document
+                string filename = dialog.FileName;
+                string[] fileText = System.IO.File.ReadAllLines(filename);
+
+                //try
+                //{
+
+                    int[][] jagged = fileText.Select(x => x.Split(' ').Select(int.Parse).ToArray()).ToArray();
+
+                    int rows = jagged.Length;
+
+                    int columns = jagged[0].Length;
+
+                Rows.SelectedIndex = rows - 2;
+                Columns.SelectedIndex = columns - 2;
+
+                    int[,] constraints = new int[rows, columns];
+
+                    for (int i = 0; i < rows; i++)
+                    {
+                        for (int j = 0; j < columns; j++)
+                        {
+
+                            if (i == rows - 1 && j == columns - 1) continue;
+                            constraints[i, j] = jagged[i][j];
+                        }
+                    }
+
+                    CreateTable(constraints);
+
+
+
+                //}
+                //catch (Exception ex)
+                //{
+                //    MessageBox.Show(ex.ToString());
+                //}
+            }
+        }
+
+        private void CreateTable(int[,] elements)
+        {
+            int rows = elements.GetUpperBound(0) + 1;
+
+            int columns = elements.Length / rows;
+
+            OrygMatrix = new TextBox[rows, columns];
+
+            for (int i = 0; i < columns + 1; i++)
+            {
+                ColumnDefinition column = new ColumnDefinition
+                {
+                    Width = new GridLength(1, GridUnitType.Star)
+                };
+                OryginalMatrix.ColumnDefinitions.Add(column);
+            }
+
+            for (int j = 0; j < columns + 1; j++)
+            {
+                RowDefinition row = new RowDefinition
+                {
+                    Height = new GridLength(1, GridUnitType.Star)
+                };
+                OryginalMatrix.RowDefinitions.Add(row);
+            }
+
+            for (int row = 0; row < rows; row++)
+            {
+                for (int col = 0; col < columns; col++)
+                {
+                    TextBox txtbox;
+                    if (rows == row && columns == col)
+                    {
+                        txtbox = new TextBox
+                        {
+                            IsReadOnly = true,
+                            Background = new SolidColorBrush(Colors.Yellow),
+                            Text = $"Пот/Пр",
+                            Name = $"a{row}{col}",
+                        };
+                        Grid.SetRow(txtbox, row);
+                        Grid.SetColumn(txtbox, col);
+                        OryginalMatrix.Children.Add(txtbox);
+                    }
+
+                    else if (columns == col || rows == row)
+                    {
+                        txtbox = new TextBox
+                        {
+                            Background = new SolidColorBrush(Colors.Yellow),
+                            Name = $"a{row}{col}",
+                        };
+                        Grid.SetRow(txtbox, row);
+                        Grid.SetColumn(txtbox, col);
+                        OryginalMatrix.Children.Add(txtbox);
+                    }
+
+                    else
+                    {
+                        txtbox = new TextBox
+                        {
+                            Name = $"a{row}{col}",
+                            Text = elements[row, col].ToString(),
+                        };
+                        Grid.SetRow(txtbox, row);
+                        Grid.SetColumn(txtbox, col);
+                        OryginalMatrix.Children.Add(txtbox);
+                    }
+
+                    OrygMatrix[row, col] = txtbox;
+                }
+            }
+        }
+
+        private void GetAnswerAndWriteFile(object sender, RoutedEventArgs e)
+        {
+            int Met = Method.SelectedIndex;
+            GetOporP(Met, true);
         }
     }
 }
