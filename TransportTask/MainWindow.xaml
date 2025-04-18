@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TransportTask"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        MaxHeight="450" MaxWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
@@ -15,8 +16,8 @@
             <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Количество пременных:" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,70,330"/>
-        <ComboBox x:Name="Rows" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="120,0,0,330" Width="40" SelectionChanged="Rows_SelectionChanged">
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Количество пременных:" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,60,330"/>
+        <ComboBox x:Name="Rows" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="140,0,0,330" Width="40" SelectionChanged="Rows_SelectionChanged">
             <ComboBoxItem Content="1"/>
             <ComboBoxItem Content="2"/>
             <ComboBoxItem Content="3"/>
@@ -29,7 +30,7 @@
             <ComboBoxItem Content="10"/>
         </ComboBox>
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Количество ограничений:" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,50,280"/>
-        <ComboBox x:Name="Columns" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="120,0,0,280" Width="40" SelectionChanged="Columns_SelectionChanged">
+        <ComboBox x:Name="Columns" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="140,0,0,280" Width="40" SelectionChanged="Columns_SelectionChanged">
             <ComboBoxItem Content="1"/>
             <ComboBoxItem Content="2"/>
             <ComboBoxItem Content="3"/>
@@ -61,6 +62,11 @@
             <ComboBoxItem Content="Северо-западного угла"/>
             <ComboBoxItem Content="Наименьшего элемента"/>
         </ComboBox>
+        <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            Ввод букв в пустые ячейки приводит к неккоректной работе программы, пожалуйста вводите только 
+            <LineBreak/>
+            целые и неотрицательные числа. Пример: 250, 100, 0, 15.
+        </TextBlock>
         <Button x:Name="ClearAll" Content="Очистить все" Grid.Column="0" Grid.Row="1" Width="120" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,55,60" Click="ClearAll_Click"/>
     </Grid>
 </Window>
